@@ -45,10 +45,10 @@ export const siteConfig: SiteConfig = {
   author: "Abhishek",
   bio: "Engineer by day, route-projector by evening, outdoor explorer on weekends. Fascinated by climbing biomechanics, tactile interfaces, and remote crags.",
   avatar: "/images/climber-avatar.svg",
-  siteUrl: "https://localhost:4321", // will dynamically adjust with Astro config
-  basePath: "",
+  siteUrl: "https://AB-SHEK.github.io/the-wall-blog",
+  basePath: "/the-wall-blog",
   socials: {
-    github: "https://github.com",
+    github: "https://github.com/AB-SHEK",
     email: "abhishek@example.com",
     instagram: "https://instagram.com",
   },

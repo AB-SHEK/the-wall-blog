@@ -6,8 +6,8 @@ import tailwindcss from '@tailwindcss/vite';
 
 // https://astro.build/config
 export default defineConfig({
-  site: process.env.SITE_URL || 'https://abhishek.github.io',
-  base: process.env.BASE_PATH || '/',
+  site: process.env.SITE_URL || 'https://AB-SHEK.github.io',
+  base: process.env.BASE_PATH || '/the-wall-blog/',
   integrations: [mdx(), sitemap()],
   vite: {
     plugins: [tailwindcss()],
