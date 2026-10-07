@@ -1,0 +1,30 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+import RouteCard from '../components/wall/RouteCard.astro';
+import ClimbingHold from '../components/wall/ClimbingHold.astro';
+
+const posts = await getCollection('blog', ({ data }) => !data.draft && data.category === 'beta-library');
+const sorted = posts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+---
+
+<BaseLayout title="The Beta Library — Research, Anatomy & Books" description="Climbing science, biomechanical research papers, and curated reading notes.">
+  <div class="py-6 border-b border-stone-200 dark:border-stone-800 mb-8">
+    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-pink-500/10 text-pink-600 dark:text-pink-400 text-xs font-mono font-bold mb-3">
+      <ClimbingHold type="sloper" color="#ec4899" size={14} />
+      <span>SECTION: BETA LIBRARY (ELEVATION: 50%)</span>
+    </div>
+    <h1 class="text-4xl md:text-5xl font-black uppercase text-stone-900 dark:text-white mb-3">
+      The Beta Library
+    </h1>
+    <p class="text-stone-600 dark:text-stone-400 text-lg">
+      In climber slang, "beta" means actionable information on how to send a route. Here is research, physiology, and literature notes.
+    </p>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    {sorted.map(post => (
+      <RouteCard post={post} />
+    ))}
+  </div>
+</BaseLayout>

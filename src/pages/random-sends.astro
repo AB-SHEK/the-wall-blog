@@ -1,0 +1,30 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+import RouteCard from '../components/wall/RouteCard.astro';
+import ClimbingHold from '../components/wall/ClimbingHold.astro';
+
+const posts = await getCollection('blog', ({ data }) => !data.draft && data.category === 'random-sends');
+const sorted = posts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+---
+
+<BaseLayout title="Random Sends — Thoughts & Curiosities" description="Spontaneous musings, mechanical keyboards, software prototypes, and experiments.">
+  <div class="py-6 border-b border-stone-200 dark:border-stone-800 mb-8">
+    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 text-purple-600 dark:text-purple-400 text-xs font-mono font-bold mb-3">
+      <ClimbingHold type="pinch" color="#8b5cf6" size={14} />
+      <span>SECTION: RANDOM SENDS (ELEVATION: 70%)</span>
+    </div>
+    <h1 class="text-4xl md:text-5xl font-black uppercase text-stone-900 dark:text-white mb-3">
+      Random Sends
+    </h1>
+    <p class="text-stone-600 dark:text-stone-400 text-lg">
+      Everything else that doesn't fit a neat box: tech quirks, life philosophy, design tinkering, and one-offs.
+    </p>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    {sorted.map(post => (
+      <RouteCard post={post} />
+    ))}
+  </div>
+</BaseLayout>

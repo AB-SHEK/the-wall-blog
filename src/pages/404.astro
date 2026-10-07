@@ -1,0 +1,45 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Fell Off The Wall (404)" description="Page not found. You fell off the route onto the crash pad.">
+  <div class="py-16 text-center max-w-lg mx-auto">
+    <!-- Animated Crash Pad SVG -->
+    <div class="relative w-48 h-32 mx-auto mb-8 animate-bounce">
+      <svg viewBox="0 0 200 120" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-full drop-shadow-xl">
+        <!-- Crash pad dual fold -->
+        <rect x="10" y="40" width="85" height="55" rx="10" fill="#0284c7" />
+        <rect x="105" y="40" width="85" height="55" rx="10" fill="#0369a1" />
+        <!-- Fold seam and carry straps -->
+        <line x1="95" y1="40" x2="95" y2="95" stroke="#082f49" stroke-width="4" />
+        <rect x="75" y="32" width="40" height="8" rx="3" fill="#ea580c" />
+        <!-- Corner reinforcements -->
+        <circle cx="20" cy="50" r="4" fill="#38bdf8" />
+        <circle cx="180" cy="50" r="4" fill="#38bdf8" />
+      </svg>
+      <!-- Chalk cloud puff under fallen climber -->
+      <div class="absolute -bottom-2 left-1/2 -translate-x-1/2 w-32 h-6 bg-stone-300/60 dark:bg-stone-700/60 blur-md rounded-full"></div>
+    </div>
+
+    <span class="inline-block px-3 py-1 rounded-full bg-rose-500/10 text-rose-600 dark:text-rose-400 font-mono font-bold text-xs uppercase mb-4">
+      404: SLIPPED OFF THE WALL
+    </span>
+
+    <h1 class="text-4xl md:text-5xl font-black uppercase text-stone-900 dark:text-white mb-4">
+      Took a Big Fall.
+    </h1>
+
+    <p class="text-stone-600 dark:text-stone-400 text-base mb-8 leading-relaxed">
+      Good news: the crash pad broke your fall. Bad news: this route doesn't exist on the wall. Dust off the chalk and try another line.
+    </p>
+
+    <div class="flex justify-center gap-4">
+      <a href={`${import.meta.env.BASE_URL.replace(/\/$/, '')}/`} class="px-6 py-3 rounded-xl bg-amber-500 hover:bg-amber-600 text-stone-950 font-bold text-sm shadow-md transition-all">
+        Back to Base Camp
+      </a>
+      <a href={`${import.meta.env.BASE_URL.replace(/\/$/, '')}/logbook`} class="px-6 py-3 rounded-xl bg-stone-200 dark:bg-stone-800 text-stone-800 dark:text-stone-200 font-bold text-sm">
+        Route Logbook
+      </a>
+    </div>
+  </div>
+</BaseLayout>

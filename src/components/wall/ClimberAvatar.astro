@@ -1,0 +1,71 @@
+---
+interface Props {
+  className?: string;
+  climbingState?: 'idle' | 'reach' | 'pull' | 'chalk';
+}
+
+const { className = '', climbingState = 'idle' } = Astro.props;
+---
+
+<div id="climber-avatar-container" class={`pointer-events-none transition-all duration-700 ease-out ${className}`}>
+  <!-- Climber Silhouette SVG with chalk bag & reach arms -->
+  <svg id="climber-svg" viewBox="0 0 120 160" width="80" height="108" fill="none" xmlns="http://www.w3.org/2000/svg" class="filter drop-shadow-md">
+    <!-- Body Core -->
+    <path d="M50 65 L 70 65 L 68 110 L 52 110 Z" fill="#1e293b" class="dark:fill-amber-500" />
+    
+    <!-- Chalk Bag on hip -->
+    <path d="M42 100 C 42 94, 52 94, 52 100 L 51 112 C 51 116, 43 116, 43 112 Z" fill="#e2e8f0" />
+    <circle cx="47" cy="100" r="3" fill="#cbd5e1" />
+    
+    <!-- Climber Head + Helmet/Beanie -->
+    <circle cx="60" cy="46" r="14" fill="#334155" class="dark:fill-amber-400" />
+    <path d="M48 44 C 48 34, 72 34, 72 44" fill="#f97316" /> <!-- Beanie -->
+
+    <!-- Left Leg -->
+    <path d="M54 110 L 40 135 L 28 145" stroke="#1e293b" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" class="dark:stroke-amber-500" />
+    <!-- Left Climbing Shoe -->
+    <path d="M28 145 L 20 148 C 16 150, 18 154, 25 152 L 32 145" fill="#ef4444" />
+
+    <!-- Right Leg high-step -->
+    <path d="M66 110 L 80 130 L 92 125" stroke="#1e293b" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" class="dark:stroke-amber-500" />
+    <!-- Right Climbing Shoe edge -->
+    <path d="M92 125 L 102 122 C 105 120, 106 124, 100 128 L 92 129" fill="#ef4444" />
+
+    <!-- Left Arm reaching for hold -->
+    <g id="climber-left-arm" class="origin-top-left transition-transform duration-500">
+      <path d="M52 68 L 35 48 L 45 20" stroke="#1e293b" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" class="dark:stroke-amber-400" />
+      <!-- Left Hand Chalked -->
+      <circle cx="45" cy="18" r="5" fill="#f1f5f9" stroke="#ffffff" stroke-width="1.5" />
+    </g>
+
+    <!-- Right Arm pulling hold -->
+    <g id="climber-right-arm" class="origin-top-right transition-transform duration-500">
+      <path d="M68 68 L 88 55 L 78 28" stroke="#1e293b" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" class="dark:stroke-amber-400" />
+      <!-- Right Hand Chalked -->
+      <circle cx="78" cy="26" r="5" fill="#f1f5f9" stroke="#ffffff" stroke-width="1.5" />
+    </g>
+  </svg>
+</div>
+
+<script>
+  // Climber micro-animation handler
+  window.addEventListener('reach-hold', ((e: CustomEvent) => {
+    const climber = document.getElementById('climber-avatar-container');
+    const leftArm = document.getElementById('climber-left-arm');
+    const rightArm = document.getElementById('climber-right-arm');
+    if (!climber) return;
+
+    if (e.detail?.direction === 'up') {
+      leftArm?.setAttribute('transform', 'rotate(-15) translate(0, -6)');
+      rightArm?.setAttribute('transform', 'rotate(15) translate(2, -8)');
+    } else if (e.detail?.direction === 'down') {
+      leftArm?.setAttribute('transform', 'rotate(10) translate(0, 4)');
+      rightArm?.setAttribute('transform', 'rotate(-10) translate(0, 4)');
+    }
+
+    setTimeout(() => {
+      leftArm?.removeAttribute('transform');
+      rightArm?.removeAttribute('transform');
+    }, 650);
+  }) as EventListener);
+</script>

@@ -1,0 +1,41 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+import RouteCard from '../../components/wall/RouteCard.astro';
+
+export async function getStaticPaths() {
+  const allPosts = await getCollection('blog', ({ data }) => !data.draft);
+  const uniqueTags = [...new Set(allPosts.flatMap(post => post.data.tags))];
+
+  return uniqueTags.map(tag => {
+    const filteredPosts = allPosts.filter(post => post.data.tags.includes(tag));
+    return {
+      params: { tag },
+      props: { posts: filteredPosts, tag },
+    };
+  });
+}
+
+const { tag, posts } = Astro.props;
+const sorted = posts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+---
+
+<BaseLayout title={`#${tag} — Routes on the Wall`} description={`All routes and articles tagged with #${tag}`}>
+  <div class="py-6 border-b border-stone-200 dark:border-stone-800 mb-8">
+    <a href={`${import.meta.env.BASE_URL.replace(/\/$/, '')}/logbook`} class="text-xs font-mono text-stone-500 hover:text-amber-500 mb-2 inline-block">
+      ← Back to Logbook
+    </a>
+    <h1 class="text-3xl md:text-5xl font-black uppercase text-stone-900 dark:text-white mb-2">
+      Tag: #{tag}
+    </h1>
+    <p class="text-stone-600 dark:text-stone-400 font-mono text-sm">
+      Found {posts.length} route{posts.length > 1 ? 's' : ''} matching this hold specification.
+    </p>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    {sorted.map(post => (
+      <RouteCard post={post} />
+    ))}
+  </div>
+</BaseLayout>

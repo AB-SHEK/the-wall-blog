@@ -1,0 +1,97 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ClimbingHold from '../components/wall/ClimbingHold.astro';
+import { siteConfig } from '../config/site.config';
+---
+
+<BaseLayout title="The Climber — About Abhishek" description="Climbing profile, current projects, philosophy, and gear notes.">
+  <div class="py-6 border-b border-stone-200 dark:border-stone-800 mb-8">
+    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-500/10 text-rose-600 dark:text-rose-400 text-xs font-mono font-bold mb-3">
+      <ClimbingHold type="jug" color="#ef4444" size={14} />
+      <span>SECTION: THE CLIMBER (SUMMIT: 100%)</span>
+    </div>
+    <h1 class="text-4xl md:text-5xl font-black uppercase text-stone-900 dark:text-white mb-3">
+      The Climber
+    </h1>
+    <p class="text-stone-600 dark:text-stone-400 text-lg">
+      Bio, field philosophy, current climbing projects, and how to get in touch.
+    </p>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+    <!-- Left Bio column -->
+    <div class="md:col-span-2 space-y-6 text-stone-700 dark:text-stone-300 text-base leading-relaxed">
+      <div class="p-6 rounded-3xl bg-white/70 dark:bg-stone-900/70 border border-stone-200 dark:border-stone-800 space-y-4 shadow-sm">
+        <h2 class="text-2xl font-black text-stone-900 dark:text-stone-100">Hey, I'm {siteConfig.author}.</h2>
+        <p>
+          I am a software engineer and outdoor enthusiast who views climbing as the purest distillation of physical problem-solving. When you are projecting an overhanging boulder problem, everything irrelevant disappears: your mind exists solely in the space between your fingertips and the next micro-crystal.
+        </p>
+        <p>
+          This website is my personal sandbox. It's built with Astro, Tailwind, and custom animation physics to capture that same intentional, tactile energy. Here I write about whatever captures my focus: travel stories from sandstone forests, research into sports biomechanics, books that challenge my mental models, and spontaneous thoughts.
+        </p>
+      </div>
+
+      <!-- Current Projects Card -->
+      <div class="p-6 rounded-3xl bg-amber-500/10 border border-amber-500/30 space-y-3">
+        <div class="flex items-center gap-2 text-amber-600 dark:text-amber-400 font-mono font-bold text-xs uppercase">
+          <span>🎯 Current Project on the Radar</span>
+        </div>
+        <h3 class="text-xl font-bold text-stone-900 dark:text-white">
+          {siteConfig.stats.currentProject}
+        </h3>
+        <p class="text-sm text-stone-600 dark:text-stone-300">
+          Dialing in core tension on 45° overhangs, training two-finger pocket endurance, and experimenting with submaximal hangboard cycles.
+        </p>
+      </div>
+
+      <!-- Contact -->
+      <div class="p-6 rounded-3xl bg-stone-100/70 dark:bg-stone-900/70 border border-stone-200 dark:border-stone-800 flex flex-wrap items-center justify-between gap-4 font-mono text-xs">
+        <div>
+          <span class="text-stone-400 block mb-1">Catch me off the wall:</span>
+          <span class="text-stone-900 dark:text-white font-bold">{siteConfig.socials.email}</span>
+        </div>
+        <div class="flex gap-3">
+          <a href={siteConfig.socials.github} class="px-4 py-2 rounded-xl bg-stone-200 dark:bg-stone-800 hover:bg-amber-500 hover:text-white transition-colors">
+            GitHub
+          </a>
+          <a href={siteConfig.socials.instagram} class="px-4 py-2 rounded-xl bg-stone-200 dark:bg-stone-800 hover:bg-amber-500 hover:text-white transition-colors">
+            Instagram
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Stats Card -->
+    <div class="space-y-6">
+      <div class="p-6 rounded-3xl bg-stone-100 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 font-mono text-xs space-y-4">
+        <h3 class="font-bold text-sm text-stone-900 dark:text-white uppercase tracking-wider border-b border-stone-200 dark:border-stone-800 pb-2">
+          Ticklist & Climber Data
+        </h3>
+
+        <div>
+          <div class="text-stone-400 text-[10px] uppercase">Hardest Boulder Sent</div>
+          <div class="text-2xl font-black text-amber-500">{siteConfig.stats.highestGradeBoulder}</div>
+        </div>
+
+        <div>
+          <div class="text-stone-400 text-[10px] uppercase">Hardest Sport Lead</div>
+          <div class="text-2xl font-black text-emerald-500">{siteConfig.stats.highestGradeLead}</div>
+        </div>
+
+        <div>
+          <div class="text-stone-400 text-[10px] uppercase">Outdoor Crags Visited</div>
+          <div class="text-2xl font-black text-stone-900 dark:text-white">{siteConfig.stats.cragsVisited} Crags</div>
+        </div>
+
+        <div>
+          <div class="text-stone-400 text-[10px] uppercase">Chalk Consumed</div>
+          <div class="text-2xl font-black text-stone-900 dark:text-white">{siteConfig.stats.chalkUsedKg}</div>
+        </div>
+
+        <div class="pt-2 border-t border-stone-200 dark:border-stone-800 text-[10px] text-stone-400">
+          Editable directly in <code>src/config/site.config.ts</code>
+        </div>
+      </div>
+    </div>
+  </div>
+</BaseLayout>

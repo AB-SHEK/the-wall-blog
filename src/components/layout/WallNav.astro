@@ -1,0 +1,209 @@
+---
+import { siteConfig } from '../../config/site.config';
+import ClimbingHold from '../wall/ClimbingHold.astro';
+import ClimberAvatar from '../wall/ClimberAvatar.astro';
+
+interface Props {
+  currentPath?: string;
+}
+
+const { currentPath = '/' } = Astro.props;
+const navItems = siteConfig.navigation;
+
+// Find active index
+const cleanCurrentPath = currentPath.replace(/\/$/, '') || '/';
+const activeIndex = navItems.findIndex(item => {
+  const cleanHref = item.href.replace(/\/$/, '') || '/';
+  return cleanHref === cleanCurrentPath;
+});
+---
+
+<nav id="wall-navigation" class="relative z-40 bg-stone-100/80 dark:bg-stone-900/80 backdrop-blur-md border-b md:border-b-0 md:border-r border-stone-200 dark:border-stone-800 transition-colors duration-300 md:w-64 flex flex-col justify-between p-4 md:min-h-screen">
+  <!-- Nav Header / Brand -->
+  <div class="flex items-center justify-between md:flex-col md:items-start gap-4 mb-4">
+    <a href={import.meta.env.BASE_URL} class="flex items-center gap-3 group">
+      <div class="relative">
+        <ClimbingHold type="jug" color="#ea580c" size={38} />
+      </div>
+      <div>
+        <span class="block font-black text-xl tracking-tight uppercase text-stone-900 dark:text-stone-100 group-hover:text-amber-500 transition-colors">
+          {siteConfig.name}
+        </span>
+        <span class="text-xs text-stone-500 dark:text-stone-400 font-mono tracking-wider">
+          PROJECT: BLOG
+        </span>
+      </div>
+    </a>
+
+    <!-- Mobile Hamburger Toggle -->
+    <button id="mobile-wall-toggle" class="md:hidden p-2 rounded-lg bg-stone-200 dark:bg-stone-800 text-stone-700 dark:text-stone-200 focus:outline-none" aria-label="Toggle Route Nav">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+      </svg>
+    </button>
+  </div>
+
+  <!-- The Route: Climber & Holds Path -->
+  <div id="nav-holds-container" class="hidden md:flex flex-col flex-1 justify-center relative py-8 px-2">
+    <!-- The Climbing Wall Rope / Height Progress Line -->
+    <div class="absolute left-9 top-4 bottom-4 w-1 bg-gradient-to-b from-emerald-500 via-amber-500 to-rose-500 rounded-full opacity-30 dark:opacity-40 pointer-events-none"></div>
+
+    <ul class="relative space-y-6">
+      {navItems.map((item, index) => {
+        const itemClean = item.href.replace(/\/$/, '') || '/';
+        const isActive = index === activeIndex;
+        return (
+          <li class="relative">
+            <a
+              href={`${import.meta.env.BASE_URL.replace(/\/$/, '')}${item.href}`}
+              data-nav-index={index}
+              data-hold-color={item.color}
+              class={`nav-hold-link flex items-center gap-4 py-2 px-3 rounded-xl transition-all duration-200 group focus:outline-none focus:ring-2 focus:ring-amber-500/50 ${
+                isActive 
+                  ? 'bg-stone-200/60 dark:bg-stone-800/60 font-bold text-stone-900 dark:text-white shadow-sm' 
+                  : 'text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-white hover:bg-stone-200/30 dark:hover:bg-stone-800/30'
+              }`}
+            >
+              <div class="relative flex-shrink-0">
+                <ClimbingHold type={item.holdType} color={item.color} size={36} active={isActive} />
+              </div>
+              <div class="flex flex-col">
+                <span class="text-sm font-semibold tracking-wide">
+                  {item.name}
+                </span>
+                <span class="text-[10px] text-stone-500 dark:text-stone-400 uppercase font-mono">
+                  HOLD #{index + 1} • {item.holdType}
+                </span>
+              </div>
+            </a>
+          </li>
+        );
+      })}
+    </ul>
+
+    <!-- Climber Avatar anchored to active hold -->
+    <div id="nav-climber-wrapper" class="absolute left-16 transition-all duration-700 ease-out hidden md:block">
+      <ClimberAvatar />
+    </div>
+  </div>
+
+  <!-- Mobile Collapsible Menu -->
+  <div id="mobile-menu" class="hidden md:hidden py-4 border-t border-stone-200 dark:border-stone-800 space-y-2">
+    {navItems.map((item, index) => (
+      <a
+        href={`${import.meta.env.BASE_URL.replace(/\/$/, '')}${item.href}`}
+        data-nav-index={index}
+        class="flex items-center gap-3 p-2 rounded-lg text-sm font-medium text-stone-700 dark:text-stone-300 hover:bg-stone-200 dark:hover:bg-stone-800"
+      >
+        <ClimbingHold type={item.holdType} color={item.color} size={28} active={index === activeIndex} />
+        <span>{item.name}</span>
+      </a>
+    ))}
+  </div>
+
+  <!-- Bottom Wall Controls (Theme toggle, Search, Elevation) -->
+  <div class="pt-4 border-t border-stone-200 dark:border-stone-800 flex items-center justify-between text-xs text-stone-600 dark:text-stone-400">
+    <button id="search-trigger-btn" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-stone-200/80 dark:bg-stone-800/80 hover:bg-stone-300 dark:hover:bg-stone-700 transition-colors" title="Search Routes (Press /)">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+      </svg>
+      <span>Search</span>
+      <kbd class="ml-1 px-1.5 py-0.5 text-[10px] bg-stone-300/80 dark:bg-stone-700/80 rounded font-mono">/</kbd>
+    </button>
+
+    <div class="flex items-center gap-2">
+      <!-- Dark/Light Theme Button -->
+      <button id="theme-toggle-btn" class="p-2 rounded-lg bg-stone-200/80 dark:bg-stone-800/80 hover:bg-stone-300 dark:hover:bg-stone-700 transition-colors" aria-label="Toggle Crag Mode">
+        <svg id="theme-sun-icon" class="w-4 h-4 hidden dark:block text-amber-400" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd" />
+        </svg>
+        <svg id="theme-moon-icon" class="w-4 h-4 block dark:hidden text-stone-700" fill="currentColor" viewBox="0 0 20 20">
+          <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
+        </svg>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- Chalk Puff Generator & Dynamic Climbing Router Scripts -->
+<script>
+  // Mobile Nav Toggle
+  const toggleBtn = document.getElementById('mobile-wall-toggle');
+  const mobileMenu = document.getElementById('mobile-menu');
+  toggleBtn?.addEventListener('click', () => {
+    mobileMenu?.classList.toggle('hidden');
+  });
+
+  // Chalk Puff Particles Effect on Hold Grab
+  function triggerChalkPuff(x: number, y: number) {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    for (let i = 0; i < 8; i++) {
+      const particle = document.createElement('div');
+      particle.className = 'chalk-particle';
+      const size = Math.random() * 8 + 4;
+      particle.style.width = `${size}px`;
+      particle.style.height = `${size}px`;
+      particle.style.left = `${x}px`;
+      particle.style.top = `${y}px`;
+
+      const angle = Math.random() * Math.PI * 2;
+      const velocity = Math.random() * 40 + 15;
+      const tx = Math.cos(angle) * velocity;
+      const ty = Math.sin(angle) * velocity;
+
+      particle.style.setProperty('--tx', `${tx}px`);
+      particle.style.setProperty('--ty', `${ty}px`);
+      document.body.appendChild(particle);
+
+      setTimeout(() => particle.remove(), 700);
+    }
+  }
+
+  // Position Climber relative to Active Nav Hold
+  function updateClimberPosition() {
+    const activeLink = document.querySelector('.nav-hold-link.bg-stone-200\\/60, .nav-hold-link.dark\\:bg-stone-800\\/60');
+    const climber = document.getElementById('nav-climber-wrapper');
+    if (activeLink && climber) {
+      const rect = activeLink.getBoundingClientRect();
+      const parentRect = activeLink.closest('#nav-holds-container')?.getBoundingClientRect();
+      if (parentRect) {
+        const topOffset = rect.top - parentRect.top;
+        climber.style.top = `${topOffset - 25}px`;
+      }
+    }
+  }
+
+  // Handle Hold Clicks
+  document.querySelectorAll('.nav-hold-link').forEach((link) => {
+    link.addEventListener('click', (e) => {
+      const mouseEvent = e as MouseEvent;
+      triggerChalkPuff(mouseEvent.clientX, mouseEvent.clientY);
+      
+      const targetIndex = Number(link.getAttribute('data-nav-index'));
+      const activeLink = document.querySelector('.nav-hold-link.bg-stone-200\\/60, .nav-hold-link.dark\\:bg-stone-800\\/60');
+      const currentIndex = activeLink ? Number(activeLink.getAttribute('data-nav-index')) : 0;
+
+      let direction = 'traverse';
+      if (targetIndex > currentIndex) {
+        direction = 'up'; // Climbing up the wall
+      } else if (targetIndex < currentIndex) {
+        direction = 'down'; // Downclimbing
+      }
+
+      sessionStorage.setItem('wall-climb-direction', direction);
+      window.dispatchEvent(new CustomEvent('reach-hold', { detail: { direction } }));
+    });
+  });
+
+  // Setup Theme Toggle
+  const themeToggle = document.getElementById('theme-toggle-btn');
+  themeToggle?.addEventListener('click', () => {
+    const isDark = document.documentElement.classList.toggle('dark');
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+  });
+
+  // Init positions
+  updateClimberPosition();
+  window.addEventListener('resize', updateClimberPosition);
+</script>

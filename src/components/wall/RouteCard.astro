@@ -1,0 +1,86 @@
+---
+import ClimbingHold from './ClimbingHold.astro';
+
+interface Props {
+  post: {
+    slug: string;
+    data: {
+      title: string;
+      description: string;
+      pubDate: Date;
+      category: string;
+      tags: string[];
+      grade: string;
+      location?: { name: string; country: string };
+      featured?: boolean;
+    };
+  };
+}
+
+const { post } = Astro.props;
+const { title, description, pubDate, category, tags, grade, location } = post.data;
+
+const gradeColors: Record<string, string> = {
+  V0: '#10b981', V1: '#10b981', V2: '#10b981',
+  V3: '#f59e0b', V4: '#f59e0b', V5: '#f59e0b',
+  V6: '#ef4444', V7: '#ef4444', V8: '#8b5cf6',
+  V9: '#8b5cf6', V10: '#ec4899',
+};
+const holdColor = gradeColors[grade] || '#f59e0b';
+---
+
+<article class="group relative rounded-3xl p-6 bg-white/60 dark:bg-stone-900/60 border border-stone-200/80 dark:border-stone-800/80 backdrop-blur-sm hover:border-amber-500/50 dark:hover:border-amber-500/50 hover:shadow-xl transition-all duration-300 flex flex-col justify-between overflow-hidden">
+  <!-- Accent Top Border Strip with Grade Color -->
+  <div class="absolute top-0 left-0 right-0 h-1.5" style={`background-color: ${holdColor};`}></div>
+
+  <div>
+    <!-- Route Meta Header -->
+    <div class="flex items-center justify-between gap-2 mb-4">
+      <div class="flex items-center gap-2">
+        <!-- Grade Tag -->
+        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-black text-white shadow-sm" style={`background-color: ${holdColor};`}>
+          <ClimbingHold type="crimp" color="#ffffff" size={12} />
+          <span>{grade}</span>
+        </span>
+        <!-- Category Badge -->
+        <span class="text-[11px] uppercase font-mono tracking-wider px-2 py-0.5 rounded-full bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400">
+          {category}
+        </span>
+      </div>
+
+      <time class="text-xs font-mono text-stone-400">
+        {pubDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+      </time>
+    </div>
+
+    <!-- Title Link -->
+    <h3 class="text-xl md:text-2xl font-black text-stone-900 dark:text-stone-100 group-hover:text-amber-500 transition-colors mb-2 leading-snug">
+      <a href={`${import.meta.env.BASE_URL.replace(/\/$/, '')}/posts/${post.id || post.slug}`} class="focus:outline-none">
+        {title}
+      </a>
+    </h3>
+
+    <p class="text-sm text-stone-600 dark:text-stone-400 leading-relaxed line-clamp-3 mb-4">
+      {description}
+    </p>
+  </div>
+
+  <div class="pt-4 border-t border-stone-200/60 dark:border-stone-800/60 flex items-center justify-between text-xs">
+    {location ? (
+      <span class="text-stone-500 font-mono truncate max-w-[180px]">
+        📍 {location.name}
+      </span>
+    ) : (
+      <div class="flex gap-1.5 overflow-hidden">
+        {tags.slice(0, 2).map(tag => (
+          <span class="text-stone-400 font-mono">#{tag}</span>
+        ))}
+      </div>
+    )}
+
+    <a href={`${import.meta.env.BASE_URL.replace(/\/$/, '')}/posts/${post.id || post.slug}`} class="font-bold text-stone-900 dark:text-stone-100 group-hover:text-amber-500 inline-flex items-center gap-1 font-mono transition-colors">
+      <span>Read Beta</span>
+      <span class="group-hover:translate-x-1 transition-transform">→</span>
+    </a>
+  </div>
+</article>

@@ -1,0 +1,78 @@
+---
+interface Props {
+  type?: 'jug' | 'crimp' | 'sloper' | 'pinch' | 'pocket';
+  color?: string;
+  size?: number;
+  className?: string;
+  active?: boolean;
+}
+
+const {
+  type = 'jug',
+  color = '#f59e0b',
+  size = 48,
+  className = '',
+  active = false
+} = Astro.props;
+---
+
+<div class={`inline-block relative climbing-hold ${active ? 'active-hold' : ''} ${className}`} style={`width: ${size}px; height: ${size}px;`}>
+  {type === 'jug' && (
+    <svg viewBox="0 0 100 100" width={size} height={size} fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 45 C 10 20, 85 15, 90 42 C 95 65, 80 88, 50 85 C 20 82, 14 65, 12 45 Z" fill={color} />
+      {/* Texture & grip lip */}
+      <path d="M22 38 C 30 26, 70 24, 80 35 C 75 48, 25 50, 22 38 Z" fill="rgba(0,0,0,0.2)" />
+      <path d="M20 36 C 30 24, 72 22, 82 33" stroke="rgba(255,255,255,0.4)" stroke-width="4" stroke-linecap="round" />
+      {/* Bolt hole */}
+      <circle cx="52" cy="56" r="7" fill="#1e293b" />
+      <circle cx="52" cy="56" r="9" stroke="rgba(255,255,255,0.2)" stroke-width="2" />
+    </svg>
+  )}
+
+  {type === 'crimp' && (
+    <svg viewBox="0 0 100 100" width={size} height={size} fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M15 35 L 85 30 C 92 32, 95 48, 88 56 L 68 75 C 55 85, 35 80, 22 70 L 12 48 C 10 40, 12 35, 15 35 Z" fill={color} />
+      {/* Sharp razor edge */}
+      <path d="M18 36 L 82 32" stroke="rgba(255,255,255,0.6)" stroke-width="4" stroke-linecap="round" />
+      <path d="M22 42 L 78 40" stroke="rgba(0,0,0,0.3)" stroke-width="3" stroke-linecap="round" />
+      <circle cx="48" cy="58" r="6" fill="#1e293b" />
+    </svg>
+  )}
+
+  {type === 'sloper' && (
+    <svg viewBox="0 0 100 100" width={size} height={size} fill="none" xmlns="http://www.w3.org/2000/svg">
+      <ellipse cx="50" cy="50" rx="42" ry="36" fill={color} />
+      {/* Smooth rounded dome highlight */}
+      <ellipse cx="44" cy="40" rx="30" ry="22" fill="rgba(255,255,255,0.25)" />
+      <path d="M25 65 C 40 75, 65 72, 75 62" stroke="rgba(0,0,0,0.25)" stroke-width="6" stroke-linecap="round" />
+      <circle cx="50" cy="52" r="7" fill="#1e293b" />
+    </svg>
+  )}
+
+  {type === 'pinch' && (
+    <svg viewBox="0 0 100 100" width={size} height={size} fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M35 15 C 42 12, 60 14, 65 22 L 72 75 C 70 88, 30 92, 28 80 L 30 25 C 30 18, 32 15, 35 15 Z" fill={color} />
+      {/* Dual side friction edges */}
+      <path d="M34 22 L 32 76" stroke="rgba(255,255,255,0.4)" stroke-width="3" stroke-linecap="round" />
+      <path d="M68 25 L 67 74" stroke="rgba(0,0,0,0.3)" stroke-width="4" stroke-linecap="round" />
+      <circle cx="49" cy="50" r="6" fill="#1e293b" />
+    </svg>
+  )}
+
+  {type === 'pocket' && (
+    <svg viewBox="0 0 100 100" width={size} height={size} fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="15" y="20" width="70" height="60" rx="20" fill={color} />
+      {/* 2 finger holes */}
+      <circle cx="38" cy="50" r="12" fill="#0f172a" />
+      <circle cx="62" cy="50" r="12" fill="#0f172a" />
+      <circle cx="38" cy="48" r="10" stroke="rgba(255,255,255,0.2)" stroke-width="2" />
+      <circle cx="62" cy="48" r="10" stroke="rgba(255,255,255,0.2)" stroke-width="2" />
+      <circle cx="50" cy="28" r="4" fill="#334155" />
+    </svg>
+  )}
+
+  {/* Active Chalk Ring */}
+  {active && (
+    <div class="absolute -inset-1.5 rounded-full border-2 border-dashed border-white/80 pointer-events-none animate-pulse"></div>
+  )}
+</div>

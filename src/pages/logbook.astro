@@ -1,0 +1,117 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+import ClimbingHold from '../components/wall/ClimbingHold.astro';
+
+const allPosts = await getCollection('blog', ({ data }) => !data.draft);
+const sortedPosts = allPosts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+// Unique categories and tags
+const categories = [...new Set(allPosts.map(p => p.data.category))];
+const tags = [...new Set(allPosts.flatMap(p => p.data.tags))];
+const years = [...new Set(allPosts.map(p => p.data.pubDate.getFullYear()))];
+---
+
+<BaseLayout title="The Logbook — All Routes Archived" description="Filterable climbing logbook with all posts by category, tag, grade, and year.">
+  <div class="py-6 border-b border-stone-200 dark:border-stone-800 mb-8">
+    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 text-xs font-mono font-bold mb-3">
+      <ClimbingHold type="pocket" color="#06b6d4" size={14} />
+      <span>SECTION: THE LOGBOOK (ELEVATION: 85%)</span>
+    </div>
+    <h1 class="text-4xl md:text-5xl font-black uppercase text-stone-900 dark:text-white mb-3">
+      The Route Logbook
+    </h1>
+    <p class="text-stone-600 dark:text-stone-400 text-lg">
+      Every problem sent, project documented, and note jotted down in chronological order.
+    </p>
+  </div>
+
+  <!-- Interactive Filters -->
+  <div class="p-6 rounded-3xl bg-stone-100/70 dark:bg-stone-900/70 border border-stone-200 dark:border-stone-800 mb-8 space-y-4">
+    <div>
+      <div class="text-xs font-mono font-bold text-stone-400 uppercase mb-2">Filter by Category</div>
+      <div class="flex flex-wrap gap-2">
+        <button class="filter-btn active-filter px-3 py-1 rounded-xl text-xs font-mono bg-stone-900 text-white dark:bg-stone-100 dark:text-stone-900" data-filter="all">
+          All Sectors ({sortedPosts.length})
+        </button>
+        {categories.map(cat => (
+          <button class="filter-btn px-3 py-1 rounded-xl text-xs font-mono bg-stone-200 dark:bg-stone-800 text-stone-700 dark:text-stone-300 hover:bg-amber-500 hover:text-white transition-colors" data-filter={cat}>
+            {cat}
+          </button>
+        ))}
+      </div>
+    </div>
+
+    <div>
+      <div class="text-xs font-mono font-bold text-stone-400 uppercase mb-2">Tags / Hold Types</div>
+      <div class="flex flex-wrap gap-1.5">
+        {tags.map(t => (
+          <a href={`${import.meta.env.BASE_URL.replace(/\/$/, '')}/tags/${t}`} class="px-2.5 py-0.5 rounded-lg text-xs font-mono bg-stone-200/50 dark:bg-stone-800/50 text-stone-600 dark:text-stone-400 hover:text-amber-500">
+            #{t}
+          </a>
+        ))}
+      </div>
+    </div>
+  </div>
+
+  <!-- Logbook Table / Route Ticklist -->
+  <div class="rounded-3xl border border-stone-200 dark:border-stone-800 overflow-hidden bg-white/50 dark:bg-stone-900/50 backdrop-blur-sm">
+    <div class="overflow-x-auto">
+      <table class="w-full text-left text-sm">
+        <thead class="bg-stone-100/80 dark:bg-stone-800/80 text-xs font-mono text-stone-500 uppercase tracking-wider border-b border-stone-200 dark:border-stone-700">
+          <tr>
+            <th class="p-4">Grade</th>
+            <th class="p-4">Route Name / Post</th>
+            <th class="p-4 hidden sm:table-cell">Sector</th>
+            <th class="p-4 text-right">Date Sent</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-stone-200/60 dark:divide-stone-800/60 font-mono text-xs">
+          {sortedPosts.map(post => (
+            <tr class="logbook-row hover:bg-amber-500/5 transition-colors" data-category={post.data.category}>
+              <td class="p-4 font-bold">
+                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-amber-500/20 text-amber-600 dark:text-amber-400 font-mono">
+                  {post.data.grade}
+                </span>
+              </td>
+              <td class="p-4 font-sans font-bold text-stone-900 dark:text-stone-100 text-sm">
+                <a href={`${import.meta.env.BASE_URL.replace(/\/$/, '')}/posts/${post.id || post.slug}`} class="hover:text-amber-500 hover:underline">
+                  {post.data.title}
+                </a>
+              </td>
+              <td class="p-4 hidden sm:table-cell text-stone-500">
+                {post.data.category}
+              </td>
+              <td class="p-4 text-right text-stone-400">
+                {post.data.pubDate.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' })}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Quick client filter script -->
+  <script>
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    const rows = document.querySelectorAll('.logbook-row');
+
+    filterBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        filterBtns.forEach(b => b.classList.remove('bg-stone-900', 'text-white', 'dark:bg-stone-100', 'dark:text-stone-900'));
+        btn.classList.add('bg-stone-900', 'text-white', 'dark:bg-stone-100', 'dark:text-stone-900');
+
+        const filter = btn.getAttribute('data-filter');
+        rows.forEach(row => {
+          const cat = row.getAttribute('data-category');
+          if (filter === 'all' || cat === filter) {
+            (row as HTMLElement).style.display = '';
+          } else {
+            (row as HTMLElement).style.display = 'none';
+          }
+        });
+      });
+    });
+  </script>
+</BaseLayout>

@@ -1,0 +1,19 @@
+---
+interface Props {
+  author?: string;
+  source?: string;
+}
+
+const { author, source } = Astro.props;
+---
+
+<blockquote class="my-8 pl-6 border-l-4 border-amber-500 italic text-stone-800 dark:text-stone-200 text-xl font-serif not-prose bg-amber-500/5 py-4 pr-6 rounded-r-2xl">
+  <div class="mb-2">
+    <slot />
+  </div>
+  {(author || source) && (
+    <footer class="text-xs not-italic font-mono text-stone-500 uppercase tracking-wider mt-2">
+      — {author} {source && <cite class="normal-case text-stone-400">({source})</cite>}
+    </footer>
+  )}
+</blockquote>

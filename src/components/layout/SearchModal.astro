@@ -1,0 +1,110 @@
+<div id="search-modal" class="fixed inset-0 z-50 bg-stone-900/60 backdrop-blur-sm hidden items-center justify-center p-4">
+  <div class="bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-2xl max-w-xl w-full p-6 shadow-2xl relative">
+    <div class="flex items-center justify-between pb-4 border-b border-stone-200 dark:border-stone-800">
+      <div class="flex items-center gap-2">
+        <span class="text-amber-500 font-bold">🧗</span>
+        <h3 class="text-lg font-black uppercase tracking-wide text-stone-900 dark:text-stone-100">Find a Route</h3>
+      </div>
+      <button id="close-search-btn" class="text-stone-400 hover:text-stone-600 dark:hover:text-stone-200 p-1 rounded">
+        ✕
+      </button>
+    </div>
+
+    <!-- Search Input Area -->
+    <div class="mt-4">
+      <input
+        type="text"
+        id="pagefind-search-input"
+        placeholder="Type route keywords, hold type, grade (e.g. 'Fontainebleau', 'V4', 'Finger')..."
+        class="w-full px-4 py-3 rounded-xl bg-stone-100 dark:bg-stone-800 border border-stone-300 dark:border-stone-700 text-stone-900 dark:text-stone-100 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-amber-500"
+      />
+    </div>
+
+    <!-- Results Area -->
+    <div id="search-results-container" class="mt-4 max-h-80 overflow-y-auto space-y-2">
+      <p class="text-xs text-stone-500 text-center py-6 font-mono">
+        Quick shortcuts: Use <kbd class="px-1.5 py-0.5 bg-stone-200 dark:bg-stone-800 rounded">Esc</kbd> to exit, <kbd class="px-1.5 py-0.5 bg-stone-200 dark:bg-stone-800 rounded">/</kbd> to open.
+      </p>
+    </div>
+  </div>
+</div>
+
+<script>
+  const searchModal = document.getElementById('search-modal');
+  const searchInput = document.getElementById('pagefind-search-input') as HTMLInputElement | null;
+  const searchResults = document.getElementById('search-results-container');
+  const openBtn = document.getElementById('search-trigger-btn');
+  const closeBtn = document.getElementById('close-search-btn');
+
+  function openSearch() {
+    searchModal?.classList.remove('hidden');
+    searchModal?.classList.add('flex');
+    searchInput?.focus();
+  }
+
+  function closeSearch() {
+    searchModal?.classList.add('hidden');
+    searchModal?.classList.remove('flex');
+  }
+
+  openBtn?.addEventListener('click', openSearch);
+  closeBtn?.addEventListener('click', closeSearch);
+
+  window.addEventListener('keydown', (e) => {
+    if (e.key === '/' && document.activeElement?.tagName !== 'INPUT' && document.activeElement?.tagName !== 'TEXTAREA') {
+      e.preventDefault();
+      openSearch();
+    }
+    if (e.key === 'Escape') {
+      closeSearch();
+    }
+  });
+
+  searchModal?.addEventListener('click', (e) => {
+    if (e.target === searchModal) closeSearch();
+  });
+
+  // Client-side quick filter simulation & Pagefind loader
+  let pagefindInstance: any = null;
+  async function loadPagefind() {
+    try {
+      const pagefindPath = `${window.location.origin}${document.querySelector('meta[name="base-path"]')?.getAttribute('content') || ''}/pagefind/pagefind.js`;
+      // Use eval/Function to prevent static build-time bundler resolution
+      pagefindInstance = await (new Function(`return import("${pagefindPath}")`))();
+      if (pagefindInstance && pagefindInstance.init) {
+        await pagefindInstance.init();
+      }
+    } catch {
+      // Graceful fallback when running in dev before pagefind index exists
+    }
+  }
+  loadPagefind();
+
+  searchInput?.addEventListener('input', async (e) => {
+    const query = (e.target as HTMLInputElement).value.trim();
+    if (!query) {
+      if (searchResults) {
+        searchResults.innerHTML = '<p class="text-xs text-stone-500 text-center py-6 font-mono">Quick shortcuts: Use Esc to exit, / to open.</p>';
+      }
+      return;
+    }
+
+    if (pagefindInstance) {
+      const search = await pagefindInstance.search(query);
+      if (search.results.length === 0) {
+        if (searchResults) searchResults.innerHTML = '<p class="text-sm text-stone-500 py-4 text-center">No routes matched this beta.</p>';
+        return;
+      }
+
+      const fiveResults = await Promise.all(search.results.slice(0, 5).map((r: any) => r.data()));
+      if (searchResults) {
+        searchResults.innerHTML = fiveResults.map((item: any) => `
+          <a href="${item.url}" class="block p-3 rounded-xl bg-stone-100/70 dark:bg-stone-800/70 hover:bg-amber-500/10 transition-colors border border-stone-200 dark:border-stone-700">
+            <h4 class="font-bold text-stone-900 dark:text-stone-100 text-sm">${item.meta.title || 'Route'}</h4>
+            <p class="text-xs text-stone-500 mt-1 line-clamp-2">${item.excerpt}</p>
+          </a>
+        `).join('');
+      }
+    }
+  });
+</script>

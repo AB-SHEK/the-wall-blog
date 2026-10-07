@@ -1,0 +1,26 @@
+---
+interface Props {
+  title: string;
+  authors: string;
+  journal?: string;
+  year?: number | string;
+  url?: string;
+}
+
+const { title, authors, journal, year, url } = Astro.props;
+---
+
+<div class="my-4 p-4 rounded-xl bg-stone-200/40 dark:bg-stone-850/40 border-l-4 border-cyan-500 not-prose text-xs font-mono">
+  <div class="font-bold text-stone-900 dark:text-stone-100 mb-1">
+    {url ? (
+      <a href={url} target="_blank" rel="noopener noreferrer" class="hover:text-cyan-500 hover:underline">
+        📄 {title} ↗
+      </a>
+    ) : (
+      <span>📄 {title}</span>
+    )}
+  </div>
+  <div class="text-stone-500 dark:text-stone-400">
+    {authors} {journal && `• ${journal}`} {year && `(${year})`}
+  </div>
+</div>

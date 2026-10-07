@@ -1,0 +1,155 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import ClimbingHold from '../components/wall/ClimbingHold.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  pubDate: Date;
+  updatedDate?: Date;
+  category: string;
+  tags?: string[];
+  grade?: string;
+  location?: { name: string; country: string };
+}
+
+const {
+  title,
+  description,
+  pubDate,
+  category,
+  tags = [],
+  grade = 'V0',
+  location,
+} = Astro.props;
+
+// Grade colors for tags
+const gradeColors: Record<string, string> = {
+  V0: '#10b981', V1: '#10b981', V2: '#10b981',
+  V3: '#f59e0b', V4: '#f59e0b', V5: '#f59e0b',
+  V6: '#ef4444', V7: '#ef4444', V8: '#8b5cf6',
+  V9: '#8b5cf6', V10: '#ec4899',
+};
+const holdColor = gradeColors[grade] || '#f59e0b';
+---
+
+<BaseLayout title={title} description={description}>
+  <!-- Top-Out Reading Progress Bar -->
+  <div id="summit-progress-container" class="fixed top-0 left-0 right-0 h-1.5 bg-stone-200 dark:bg-stone-800 z-50">
+    <div id="summit-progress-bar" class="h-full bg-gradient-to-r from-amber-500 to-rose-500 w-0 transition-all duration-150"></div>
+  </div>
+
+  <article class="max-w-3xl mx-auto py-8">
+    <!-- Breadcrumb / Route Back Link -->
+    <div class="mb-6">
+      <a href={`${import.meta.env.BASE_URL.replace(/\/$/, '')}/`} class="inline-flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-stone-500 hover:text-amber-500 transition-colors">
+        <span>← Downclimb to Base Camp</span>
+      </a>
+    </div>
+
+    <!-- Route Header / Problem Card Style -->
+    <header class="p-6 md:p-8 rounded-3xl bg-white/70 dark:bg-stone-900/70 border border-stone-200/80 dark:border-stone-800/80 backdrop-blur-md shadow-sm mb-12 relative overflow-hidden">
+      <!-- Decorative Hold in top corner -->
+      <div class="absolute -top-4 -right-4 opacity-20 pointer-events-none">
+        <ClimbingHold type="sloper" color={holdColor} size={130} />
+      </div>
+
+      <div class="flex flex-wrap items-center gap-3 mb-4">
+        <!-- Grade Badge -->
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold uppercase text-white shadow-sm" style={`background-color: ${holdColor};`}>
+          <ClimbingHold type="crimp" color="#ffffff" size={14} />
+          <span>{grade}</span>
+        </span>
+
+        <!-- Category Tag -->
+        <a href={`${import.meta.env.BASE_URL.replace(/\/$/, '')}/${category}`} class="text-xs uppercase font-mono tracking-wider px-3 py-1 rounded-full bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 hover:text-amber-500">
+          {category}
+        </a>
+
+        <!-- Location tag if available -->
+        {location && (
+          <span class="text-xs font-mono text-stone-500 flex items-center gap-1">
+            📍 {location.name}, {location.country}
+          </span>
+        )}
+
+        <time class="text-xs text-stone-400 font-mono ml-auto">
+          {pubDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+        </time>
+      </div>
+
+      <h1 class="text-3xl md:text-5xl font-black tracking-tight text-stone-900 dark:text-stone-100 mb-4 leading-tight">
+        {title}
+      </h1>
+
+      <p class="text-lg text-stone-600 dark:text-stone-400 leading-relaxed">
+        {description}
+      </p>
+
+      {tags.length > 0 && (
+        <div class="flex flex-wrap gap-2 mt-6 pt-6 border-t border-stone-200/60 dark:border-stone-800/60">
+          {tags.map(t => (
+            <a href={`${import.meta.env.BASE_URL.replace(/\/$/, '')}/tags/${t}`} class="text-xs px-2.5 py-1 rounded-lg bg-stone-200/50 dark:bg-stone-800/50 text-stone-600 dark:text-stone-400 hover:bg-amber-500 hover:text-white transition-colors">
+              #{t}
+            </a>
+          ))}
+        </div>
+      )}
+    </header>
+
+    <!-- Post Content (MDX Render) -->
+    <div class="prose prose-stone dark:prose-invert max-w-none text-stone-800 dark:text-stone-200 text-lg leading-relaxed space-y-6">
+      <slot />
+    </div>
+
+    <!-- Summit / Topped-Out Celebration Card at Bottom -->
+    <div id="summit-celebration-card" class="mt-16 p-8 rounded-3xl bg-gradient-to-br from-amber-500/10 via-orange-500/10 to-rose-500/10 border border-amber-500/30 text-center relative overflow-hidden">
+      <div class="relative z-10">
+        <span class="text-4xl block mb-2">🏔️</span>
+        <h3 class="text-2xl font-black text-stone-900 dark:text-white mb-2">Topped Out! Route Sent.</h3>
+        <p class="text-sm text-stone-600 dark:text-stone-300 max-w-md mx-auto mb-6">
+          You made it to the summit of this note. Grab some chalk, rest the forearms, or explore the next hold on the wall.
+        </p>
+        <div class="flex justify-center gap-4">
+          <a href={`${import.meta.env.BASE_URL.replace(/\/$/, '')}/logbook`} class="px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-stone-900 font-bold text-sm shadow-md transition-transform hover:-translate-y-0.5">
+            View Route Logbook
+          </a>
+          <a href={`${import.meta.env.BASE_URL.replace(/\/$/, '')}/`} class="px-5 py-2.5 rounded-xl bg-stone-200 dark:bg-stone-800 hover:bg-stone-300 dark:hover:bg-stone-700 text-stone-800 dark:text-stone-200 font-bold text-sm transition-colors">
+            Back to Base Camp
+          </a>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <!-- Scroll Progress Script & Confetti Top-Out -->
+  <script>
+    import confetti from 'canvas-confetti';
+
+    let sentCelebrated = false;
+
+    function handleScroll() {
+      const progressBar = document.getElementById('summit-progress-bar');
+      if (!progressBar) return;
+
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = Math.min((scrollTop / docHeight) * 100, 100);
+      progressBar.style.width = `${progress}%`;
+
+      if (progress > 95 && !sentCelebrated) {
+        sentCelebrated = true;
+        if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+          confetti({
+            particleCount: 50,
+            spread: 60,
+            origin: { y: 0.85 },
+            colors: ['#ea580c', '#eab308', '#10b981', '#38bdf8', '#ffffff']
+          });
+        }
+      }
+    }
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+  </script>
+</BaseLayout>

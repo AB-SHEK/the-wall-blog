@@ -1,0 +1,102 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+import RouteCard from '../components/wall/RouteCard.astro';
+import ClimbingHold from '../components/wall/ClimbingHold.astro';
+import { siteConfig } from '../config/site.config';
+
+const allPosts = await getCollection('blog', ({ data }) => !data.draft);
+const sortedPosts = allPosts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+const featuredPost = sortedPosts.find(p => p.data.featured) || sortedPosts[0];
+const recentPosts = sortedPosts.filter(p => (p.id || p.slug) !== (featuredPost?.id || featuredPost?.slug)).slice(0, 4);
+---
+
+<BaseLayout title={siteConfig.title} description={siteConfig.description}>
+  <!-- Hero / Wall Intro -->
+  <section class="py-6 md:py-12 border-b border-stone-200 dark:border-stone-800">
+    <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+      <div class="max-w-2xl">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 text-xs font-mono font-bold mb-4">
+          <ClimbingHold type="jug" color="#ea580c" size={14} />
+          <span>ELEVATION: BASE CAMP • GROUND LEVEL</span>
+        </div>
+        <h1 class="text-4xl md:text-6xl font-black tracking-tight text-stone-900 dark:text-white uppercase mb-4 leading-none">
+          {siteConfig.title}
+        </h1>
+        <p class="text-lg md:text-xl text-stone-600 dark:text-stone-300 font-light leading-relaxed">
+          {siteConfig.tagline}
+        </p>
+      </div>
+
+      <!-- Quick Climbing Stats Widget -->
+      <div class="p-5 rounded-2xl bg-white/70 dark:bg-stone-900/70 border border-stone-200 dark:border-stone-800 shadow-sm font-mono text-xs space-y-2 w-full md:w-auto">
+        <div class="text-stone-400 uppercase tracking-widest text-[10px] font-bold">Wall Specs & Ticks</div>
+        <div class="flex justify-between gap-6"><span class="text-stone-500">Max Boulder:</span> <span class="font-bold text-amber-500">{siteConfig.stats.highestGradeBoulder}</span></div>
+        <div class="flex justify-between gap-6"><span class="text-stone-500">Crags Visited:</span> <span class="font-bold text-stone-900 dark:text-stone-100">{siteConfig.stats.cragsVisited}</span></div>
+        <div class="flex justify-between gap-6"><span class="text-stone-500">Chalk Spent:</span> <span class="font-bold text-stone-900 dark:text-stone-100">{siteConfig.stats.chalkUsedKg}</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Today's Project (Featured Route) -->
+  {featuredPost && (
+    <section class="my-12">
+      <div class="flex items-center gap-2 mb-6">
+        <span class="text-xl">🎯</span>
+        <h2 class="text-xs font-mono font-bold uppercase tracking-wider text-stone-500">
+          Featured Project on the Wall
+        </h2>
+      </div>
+
+      <div class="relative p-8 md:p-10 rounded-3xl bg-gradient-to-br from-amber-500/15 via-orange-500/10 to-stone-900/5 dark:to-stone-900/40 border-2 border-amber-500/30 backdrop-blur-md shadow-lg overflow-hidden group">
+        <div class="flex flex-wrap items-center gap-3 mb-4">
+          <span class="px-3 py-1 rounded-full text-xs font-black uppercase bg-amber-500 text-stone-900">
+            {featuredPost.data.grade} PROJECT
+          </span>
+          <span class="text-xs uppercase font-mono text-stone-500">
+            {featuredPost.data.category}
+          </span>
+          <time class="text-xs font-mono text-stone-400 ml-auto">
+            {featuredPost.data.pubDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+          </time>
+        </div>
+
+        <h3 class="text-2xl md:text-4xl font-black text-stone-900 dark:text-white mb-4 group-hover:text-amber-500 transition-colors">
+          <a href={`${import.meta.env.BASE_URL.replace(/\/$/, '')}/posts/${featuredPost.id || featuredPost.slug}`}>
+            {featuredPost.data.title}
+          </a>
+        </h3>
+
+        <p class="text-stone-600 dark:text-stone-300 text-base md:text-lg mb-6 leading-relaxed max-w-3xl">
+          {featuredPost.data.description}
+        </p>
+
+        <a href={`${import.meta.env.BASE_URL.replace(/\/$/, '')}/posts/${featuredPost.id || featuredPost.slug}`} class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-amber-500 hover:bg-amber-600 text-stone-950 font-bold text-sm shadow-md transition-all group-hover:translate-x-1">
+          <span>Read Route Beta</span>
+          <span>→</span>
+        </a>
+      </div>
+    </section>
+  )}
+
+  <!-- Latest Sends & Routes Grid -->
+  <section class="my-12">
+    <div class="flex items-center justify-between mb-8">
+      <div class="flex items-center gap-2">
+        <span class="text-xl">🧗</span>
+        <h2 class="text-xs font-mono font-bold uppercase tracking-wider text-stone-500">
+          Recent Sends on the Wall
+        </h2>
+      </div>
+      <a href={`${import.meta.env.BASE_URL.replace(/\/$/, '')}/logbook`} class="text-xs font-mono font-bold text-amber-500 hover:underline">
+        All Logs (Archive) →
+      </a>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {recentPosts.map(post => (
+        <RouteCard post={post} />
+      ))}
+    </div>
+  </section>
+</BaseLayout>

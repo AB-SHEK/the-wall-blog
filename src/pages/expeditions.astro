@@ -1,0 +1,56 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+import RouteCard from '../components/wall/RouteCard.astro';
+import ClimbingHold from '../components/wall/ClimbingHold.astro';
+
+const posts = await getCollection('blog', ({ data }) => !data.draft && data.category === 'expeditions');
+const sorted = posts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+---
+
+<BaseLayout title="Expeditions — Travel Stories & Outdoor Crags" description="Journeys, boulder fields, and crags across the world.">
+  <div class="py-6 border-b border-stone-200 dark:border-stone-800 mb-8">
+    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 text-xs font-mono font-bold mb-3">
+      <ClimbingHold type="crimp" color="#f59e0b" size={14} />
+      <span>SECTION: EXPEDITIONS (ELEVATION: 30%)</span>
+    </div>
+    <h1 class="text-4xl md:text-5xl font-black uppercase text-stone-900 dark:text-white mb-3">
+      Expeditions & Field Crags
+    </h1>
+    <p class="text-stone-600 dark:text-stone-400 text-lg">
+      Stories from remote rocks, flight tickets, campfire debates, and dirtbag adventures.
+    </p>
+  </div>
+
+  <!-- Interactive Crag Pinboard Map -->
+  <div class="mb-10 p-6 rounded-3xl bg-stone-100/70 dark:bg-stone-900/70 border border-stone-200 dark:border-stone-800">
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="font-bold text-sm text-stone-800 dark:text-stone-200 uppercase font-mono">📍 Global Crags Visited</h3>
+      <span class="text-xs font-mono text-stone-500">14 Crags Documented</span>
+    </div>
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-mono">
+      <div class="p-3 rounded-xl bg-white/80 dark:bg-stone-800/80 border border-stone-200 dark:border-stone-700">
+        <div class="font-bold text-amber-500">🇫🇷 Fontainebleau</div>
+        <div class="text-[10px] text-stone-500">Sandstone • Slopers</div>
+      </div>
+      <div class="p-3 rounded-xl bg-white/80 dark:bg-stone-800/80 border border-stone-200 dark:border-stone-700">
+        <div class="font-bold text-amber-500">🇺🇸 Bishop & Buttermilks</div>
+        <div class="text-[10px] text-stone-500">Quartz Monzonite • Highballs</div>
+      </div>
+      <div class="p-3 rounded-xl bg-white/80 dark:bg-stone-800/80 border border-stone-200 dark:border-stone-700">
+        <div class="font-bold text-amber-500">🇨🇭 Magic Wood</div>
+        <div class="text-[10px] text-stone-500">Alpine Granite • Roofs</div>
+      </div>
+      <div class="p-3 rounded-xl bg-white/80 dark:bg-stone-800/80 border border-stone-200 dark:border-stone-700">
+        <div class="font-bold text-amber-500">🇿🇦 Rocklands</div>
+        <div class="text-[10px] text-stone-500">Cederberg Orange • Dynos</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    {sorted.map(post => (
+      <RouteCard post={post} />
+    ))}
+  </div>
+</BaseLayout>
